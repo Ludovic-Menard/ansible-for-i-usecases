@@ -22,3 +22,5 @@
       register: system_status
       tags: system_status
       ignore_errors: true
+    - debug:
+      var: system_status
