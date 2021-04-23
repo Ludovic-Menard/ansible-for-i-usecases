@@ -1,0 +1,24 @@
+# Copyright (c) IBM Corporation 2019, 2020
+# Apache License, Version 2.0 (see https://opensource.org/licenses/Apache-2.0)
+---
+- hosts: all
+  gather_facts: false
+  collections:
+    - ibm.power_ibmi
+
+  vars:
+    become_user_name: null
+    become_user_password: null
+
+  tasks:
+    - name: system status
+      ibmi_sql_query:
+        sql: "SELECT *
+                  FROM QSYS2.SYSTEM_STATUS (RESET_STATISTICS=>'YES')) X;"
+                  
+        become_user: '{{ become_user_name }}'
+        become_user_password: '{{ become_user_password }}'
+        expected_row_count: 0
+      register: system_status
+      tags: system_status
+      ignore_errors: true
