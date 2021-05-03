@@ -13,9 +13,10 @@
   tasks:
     - name: disk status
       ibmi_sql_query:
-        sql: "SELECT path_name, object_type, data_size, object_owner
-                     FROM TABLE(qsys2.IFS_OBJECT_STATISTICS(start_path_name => '/home/{ifs}',subtree_directories => 'YES'))
-   ORDER BY data_size DESC LIMIT 10;"
+        sql: "SELECT distinct unit_number, disk_type,
+                     DEC(unit_storage_capacity/1000000000,4) AS capacity, percent_used
+                     FROM qsys2.sysdiskstat
+                     WHERE resource_status = 'ACTIVE';"
                   
         become_user: '{{ become_user_name }}'
         become_user_password: '{{ become_user_password }}'
