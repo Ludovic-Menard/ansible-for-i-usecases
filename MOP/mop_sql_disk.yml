@@ -1,0 +1,28 @@
+# Copyright (c) IBM Corporation 2019, 2020
+# Apache License, Version 2.0 (see https://opensource.org/licenses/Apache-2.0)
+---
+- hosts: all
+  gather_facts: false
+  collections:
+    - ibm.power_ibmi
+
+  vars:
+    become_user_name: null
+    become_user_password: null
+
+  tasks:
+    - name: disk status
+      ibmi_sql_query:
+        sql: "SELECT distinct unit_number, disk_type,
+                     DEC(unit_storage_capacity/1000000000, 4, 2) AS capacity, percent_used
+                     FROM qsys2.sysdiskstat
+                     WHERE resource_status = 'ACTIVE';"
+                  
+        become_user: '{{ become_user_name }}'
+        become_user_password: '{{ become_user_password }}'
+        expected_row_count: 0
+      register: disk_status
+      tags: disk_status
+      ignore_errors: true
+    - debug:
+       var: disk_status
