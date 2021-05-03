@@ -20,7 +20,6 @@
                   
         become_user: '{{ become_user_name }}'
         become_user_password: '{{ become_user_password }}'
-        expected_row_count: 0
       register: disk_status
       tags: disk_status
       ignore_errors: true
