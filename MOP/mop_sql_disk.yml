@@ -14,7 +14,7 @@
     - name: disk status
       ibmi_sql_query:
         sql: "SELECT distinct unit_number, disk_type,
-                     DEC(unit_storage_capacity/1000000000, 4, 2) AS capacity, percent_used
+                     DEC(unit_storage_capacity/1000000000,4) AS capacity, percent_used
                      FROM qsys2.sysdiskstat
                      WHERE resource_status = 'ACTIVE';"
                   
