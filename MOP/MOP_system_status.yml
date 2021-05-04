@@ -18,7 +18,6 @@
                   
         become_user: '{{ become_user_name }}'
         become_user_password: '{{ become_user_password }}'
-        expected_row_count: 0
       register: system_status
       tags: system_status
       ignore_errors: true
