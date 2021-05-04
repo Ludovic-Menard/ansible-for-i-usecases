@@ -14,7 +14,7 @@
     - name: system status
       ibmi_sql_query:
         sql: "SELECT *
-                  FROM QSYS2.SYSTEM_STATUS (RESET_STATISTICS=>'YES')) X;"
+                  FROM TABLE(QSYS2.SYSTEM_STATUS (RESET_STATISTICS=>'YES')) X;"
                   
         become_user: '{{ become_user_name }}'
         become_user_password: '{{ become_user_password }}'
