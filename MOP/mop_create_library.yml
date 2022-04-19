@@ -4,11 +4,14 @@
   collections:
     - ibm.power_ibmi
 
+  vars:
+    library: ansible
+    
   tasks:
     
     - name: create ansible library
       ibmi_cl_command:
-        cmd: crtlib lib(xxxxxxx)
+        cmd: crtlib lib('{{ library }}')
         joblog: false
       register: crtlib_result
     - debug:
