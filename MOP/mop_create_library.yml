@@ -11,7 +11,7 @@
     
     - name: create ansible library
       ibmi_cl_command:
-        cmd: crtlib lib('{{ library }}')
+        cmd: crtlib lib({{ library }})
         joblog: false
       register: crtlib_result
     - debug:
