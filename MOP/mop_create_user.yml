@@ -3,6 +3,9 @@
   gather_facts: false
   collections:
     - ibm.power_ibmi
+    
+  vars: 
+    user_profile: ludo
 
   tasks:
     
