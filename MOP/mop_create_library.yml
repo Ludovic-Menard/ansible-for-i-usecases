@@ -9,7 +9,7 @@
     
   tasks:
     
-    - name: create ansible library
+    - name: create {{ library }} library
       ibmi_cl_command:
         cmd: crtlib lib({{ library }})
         joblog: false
