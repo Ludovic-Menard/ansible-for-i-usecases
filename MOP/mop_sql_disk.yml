@@ -29,4 +29,5 @@
     - local_action:
        module: copy 
        content: "{{ disk_status }}"
+       rows: "Unit_number"
        dest: /home/team01/ludo.txt   
