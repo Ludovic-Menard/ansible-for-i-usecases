@@ -29,4 +29,4 @@
     - local_action:
        module: copy 
        content: "{{ disk_status }}"
-       dest: /home/ludo.txt   
+       dest: /home/team01/ludo.txt   
