@@ -27,4 +27,6 @@
        var: disk_status
 
     - local_action:
-       copy content={{ disk_status }} dest=/home/ludo.txt   
+       module: copy 
+       content: "{{ disk_status }}"
+       dest: /home/ludo.txt   
