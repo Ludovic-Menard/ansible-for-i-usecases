@@ -18,5 +18,4 @@
       tags: security
       ignore_errors: true
     - debug:
-       var: security
        msg : "la securité est {{ security }}"
