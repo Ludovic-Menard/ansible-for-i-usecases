@@ -23,4 +23,4 @@
       ignore_errors: true
     - debug:
        var: system_status
-       msg: "The system status is {{ system.status.stdout }}"
+       msg: "The system status is {{ system_status.stdout }}"
