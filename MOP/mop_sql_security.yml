@@ -17,5 +17,11 @@
       register: security
       tags: security
       ignore_errors: true
-    - debug:
-       msg : "la securité est {{ security.stdout }}"
+    - name: print
+      debug:
+        msg: "{{ security.row }}"
+    - name: copy
+      copy:
+        content: "{{ security.row | from_yaml }}"
+        dest: "/home/menard/ludo.csv"
+  
