@@ -5,7 +5,7 @@
     - ibm.power_ibmi
 
   vars:
-    email: ludovic_menardàfr.ibm.com
+    email: ludovic_menard@fr.ibm.com
     
   tasks:
     
