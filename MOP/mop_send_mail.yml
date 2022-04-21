@@ -1,0 +1,20 @@
+---
+- hosts: ibmi
+  gather_facts: false
+  collections:
+    - ibm.power_ibmi
+
+  vars:
+    email: ludovic_menard@fr.ibm.com
+    
+  tasks:
+    
+    - name: send a mail
+      ibmi_cl_command:
+        cmd: sndsmtpemm RCP(('{{ email }}'))
+                        SUBJECT('test envoi')
+                        NOTE(ludo)
+        joblog: false
+      register: send_mail
+    - debug:
+       var: crtlisend_mail
