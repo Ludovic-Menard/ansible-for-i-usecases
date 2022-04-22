@@ -19,9 +19,9 @@
       ignore_errors: true
     - name: print
       debug:
-        msg: "{{ security.row }}"
+        results: "{{ security.row.security_level }}"
     - name: copy
       copy:
-        content: "{{ security.row | from_yaml }}"
+        content: "{{ security.row.security_level | from_yaml }}"
         dest: "/home/menard/ludo.csv"
   
