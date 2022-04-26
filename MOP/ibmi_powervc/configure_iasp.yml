@@ -20,7 +20,7 @@
     volume_number: 1
     volume_size: 10
     volume_name_prefix: 'IBMi_TeamX'
-    storage_template_id: 'c4ee6efc-3d45-44f1-af1e-cfeb46504a82'
+    storage_template_id: 'dfde7513-e2ed-47bc-87d8-2324c93c72ab'
 
   roles:
     - role: vm_create
