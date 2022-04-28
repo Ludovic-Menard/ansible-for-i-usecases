@@ -27,7 +27,7 @@
     - debug:
        var: disk_status
 
-    - local_action:
-       module: copy 
-       content: "{{ disk_status }}"
-       dest: /home/{{ user_profile }}/ludo.txt   
+    - name: create result to file ludo.txt
+      copy: 
+        content: "{{ disk_status.row }}"
+        dest: /home/{{ user_profile }}/ludo.txt   
