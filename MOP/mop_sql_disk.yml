@@ -30,5 +30,4 @@
     - local_action:
        module: copy 
        content: "{{ disk_status }}"
-       rows: "Unit_number"
        dest: /home/{{ user_profile }}/ludo.txt   
