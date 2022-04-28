@@ -25,7 +25,7 @@
 
     - name: create IFS directory for profile {{ user_profile }}
       ibmi_cl_command:
-        cmd: 'mkdir /home/{{ user_profile }}/'
+        cmd: 'mkdir dir(/home/{{ user_profile }})'
         become_user: '{{ user_profile }}'
       register: ifs_directory
     - debug:
