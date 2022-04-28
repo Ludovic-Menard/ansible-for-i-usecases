@@ -7,6 +7,7 @@
     - ibm.power_ibmi
 
   vars:
+    user_profile: ludo
     become_user_name: null
     become_user_password: null
 
@@ -30,4 +31,4 @@
        module: copy 
        content: "{{ disk_status }}"
        rows: "Unit_number"
-       dest: /home/team01/ludo.txt   
+       dest: /home/{{ user_profile }}/ludo.txt   
