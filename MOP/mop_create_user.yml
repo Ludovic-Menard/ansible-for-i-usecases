@@ -27,7 +27,7 @@
       file:
         path: /home/{{ user_profile }}
         state: directory
-        owner: {{ user_profile }}
+        owner: "{{ user_profile }}"
         
       register: ifs_directory
     - debug:
