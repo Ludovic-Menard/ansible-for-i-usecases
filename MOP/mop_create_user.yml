@@ -22,3 +22,10 @@
       ibmi_user_and_group:
         operation: 'display'
         user: '{{user_profile}}'
+
+    - name: create IFS directory for profile {{ user_profile }}
+      ibmi_cl_command:
+        cmd: 'mkdir /home/{{ user_profile }}/'
+      register: ifs_directory
+    - debug:
+       var: ifs_directory  
