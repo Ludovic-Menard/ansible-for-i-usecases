@@ -18,4 +18,4 @@
         joblog: false
       register: send_mail
     - debug:
-       var: crtlisend_mail
+       var: result_send_mail
