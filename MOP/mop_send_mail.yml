@@ -9,7 +9,7 @@
     
   tasks:
     
-    - name: send a mail
+    - name: send a mail to {{ email }}
       ibmi_cl_command:
         cmd: sndsmtpemm RCP(('{{ email }}'))
                         SUBJECT('test envoi')
