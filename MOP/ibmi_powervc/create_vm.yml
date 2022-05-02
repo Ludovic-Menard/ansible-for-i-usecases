@@ -4,7 +4,7 @@
 
   vars:
     cloud_name: 'pvcmop'
-    vm_name: 'IBMi_TeamX'
+    vm_name: 'IBMi_user'
     vm_hostname: 'ludo' 
     availability_zone: 'nova:828642A_102BABV'
     image: 'IBMi_V7R4_V7024'
