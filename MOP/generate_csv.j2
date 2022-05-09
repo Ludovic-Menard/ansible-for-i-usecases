@@ -2,5 +2,5 @@
 NO,Capacity,disk_type,Percent_used,Unit_number
 {% for each in disk_status.row %}
 {{s_no}},{{each.CAPACITY}},{{each.DISK_TYPE}},{{each.PERCENT_USED}},{{each.UNIT_NUMBER}}
-{% set s_no = s_no+1 %}
+{% set s_no = s_no + 1 %}
 {% endfor %} 
