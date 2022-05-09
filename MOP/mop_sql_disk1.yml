@@ -33,4 +33,4 @@
     - name: template CSV
       template:
         src: generate_csv.j2
-        dest: /home/{{ user_profile }}/disk_list.csv
+        dest: /home/{{ user_profile }}/disk_list.xlsx
