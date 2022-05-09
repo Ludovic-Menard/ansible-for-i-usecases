@@ -12,7 +12,7 @@
     become_user_password: null
 
   tasks:
-    - name: disk status
+    - name: ptfs status
       ibmi_sql_query:
         sql: "With iLevel(iVersion, iRelease) AS
              (select OS_VERSION, OS_RELEASE from sysibmadm.env_sys_info)
@@ -24,13 +24,13 @@
                   
         become_user: '{{ become_user_name }}'
         become_user_password: '{{ become_user_password }}'
-      register: disk_status
-      tags: disk_status
+      register: ptfs_status
+      tags: ptfs_status
       ignore_errors: true
     - debug:
-       var: disk_status
+       var: ptfs_status
 
-    - name: create result to file ludo.txt
-      copy: 
-        content: "{{ disk_status.row }}"
-        dest: /home/{{ user_profile }}/ptfs.txt   
+    - name: template CSV
+      template:
+        src: ptfs_csv.j2
+        dest: /home/{{ user_profile }}/ptfs_list.xls
