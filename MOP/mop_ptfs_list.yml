@@ -12,7 +12,7 @@
     become_user_password: null
 
   tasks:
-    - name: ptfs status
+    - name: PTFS status
       ibmi_sql_query:
         sql: "With iLevel(iVersion, iRelease) AS
              (select OS_VERSION, OS_RELEASE from sysibmadm.env_sys_info)
