@@ -1,4 +1,4 @@
-# Copyright (c) IBM Corporation 2019, 2020
+# Copyright (c) I.BM Corporation 2019, 2020
 # Apache License, Version 2.0 (see https://opensource.org/licenses/Apache-2.0)
 
 #ibmi-fix-repo-sample.yml 
@@ -24,7 +24,8 @@
 
     - name: display_a_single_group
       debug:
-        msg: "{{ single_group }}"
+       # msg: "{{ single_group }}"
+       var: single_status
 
     - name: template CSV
       template:
