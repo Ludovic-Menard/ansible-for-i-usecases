@@ -22,9 +22,9 @@
       register: single_group
       tags: single_status
 
-    #- name: display_a_single_group
-    #  debug:
-    #    msg: "{{ single_group }}"
+    - name: display_a_single_group
+      debug:
+        msg: "{{ single_group }}"
 
     - name: template CSV
       template:
