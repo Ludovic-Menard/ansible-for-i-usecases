@@ -25,7 +25,7 @@
     - name: display_a_single_group
       debug:
        # msg: "{{ single_group }}"
-       var: single_group.group_info
+       var: single_group.group_info.ptf_list[]
        #var: single_group
 
     - name: template CSV
