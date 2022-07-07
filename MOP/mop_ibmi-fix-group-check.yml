@@ -20,12 +20,12 @@
         groups:
           - "SF99737"
       register: single_group
-      tags: single_status
+      tags: single_group
 
     - name: display_a_single_group
       debug:
        # msg: "{{ single_group }}"
-       var: single_group.group_info.ptf_list[]
+       var: single_group
        #var: single_group
 
     - name: template CSV
