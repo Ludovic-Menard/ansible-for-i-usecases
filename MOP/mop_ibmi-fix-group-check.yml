@@ -32,4 +32,11 @@
       template:
         src: single_group_csv.j2
         dest: /home/{{ user_profile }}/single_group.xls
+    
+    - name: Return ibmi_facts
+      ibm.power_ibmi.ibmi_facts:
+
+    - name: showing values
+      debug:
+        msg: "{{ ansible_facts.group_ptf_info }}"
 
