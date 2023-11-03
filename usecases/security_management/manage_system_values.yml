@@ -1,7 +1,7 @@
 # Copyright (c) IBM Corporation 2019, 2020
 # Apache License, Version 2.0 (see https://opensource.org/licenses/Apache-2.0)
 ---
-- hosts: all
+- hosts: "{{ target_system | default('all') }}"
   gather_facts: true
   collections:
     - ibm.power_ibmi
@@ -42,15 +42,20 @@
                     - are intended for environments or use cases where security is paramount
                     - acts as defense in depth measure
                     - may negatively inhibit the utility or performance of the technology
-              Type 1 or 2 and press Enter
+                * Level 3: IBM i PRTSYSSECA, High Security/Sensitive Data Environment (limited functionality)
+                  Items in this profile may have the following characteristic(s):
+                    - are intended for environments or use cases where security is paramount
+                    - acts as defense in depth measure
+                    - may negatively inhibit the utility or performance of the technology
+              Type 1, 2 or 3 and press Enter
           register: level
 
         - set_fact:
             level_mode: "{{ level.user_input | trim }}"
 
         - fail:
-            msg: "Only 1/2 is permitted in level selection"
-          when: level_mode != '1' and level_mode != '2'
+            msg: "Only 1,2 or 3 is permitted in level selection"
+          when: level_mode != '1' and level_mode != '2' and level_mode != '3'
 
         - set_fact:
             timestamp: '{{ ansible_date_time.iso8601_basic_short }}'
@@ -90,10 +95,14 @@
               - {'name':'QRETSVRSEC', 'expect':'1', 'check': 'equal'}
               - {'name':'QRMTIPL', 'expect':'0', 'check': 'equal'}
               - {'name':'QRMTSIGN', 'expect':'*VERIFY', 'check': 'equal'}
+              - {'name':'QRMTSRVATR', 'expect':'0', 'check': 'equal'}
               - {'name':'QSCANFS', 'expect':'*ROOTOPNUD', 'check': 'equal'}
               - {'name':'QSCANFSCTL', 'expect':'*ERRFAIL *NOWRTUPG', 'check': 'equal'}
               - {'name':'QSECURITY', 'expect':'40', 'check': 'equal'}
               - {'name':'QSHRMEMCTL', 'expect':'1', 'check': 'equal'}
+              - {'name':'QSSLCSL', 'expect':'*AES_128_GCM_SHA256 *AES_256_GCM_SHA384 *CHACHA20_POLY1305_SHA256
+                  *ECDHE_ECDSA_AES_128_GCM_SHA256 *ECDHE_ECDSA_AES_256_GCM_SHA384 *ECDHE_RSA_AES_128_GCM_SHA256
+                  *ECDHE_RSA_AES_256_GCM_SHA384', 'check': 'equal_as_list'}
               - {'name':'QSSLCSLCTL', 'expect':'*OPSYS', 'check': 'equal'}
               - {'name':'QSSLPCL', 'expect':'*TLSV1.3 *TLSV1.2', 'check': 'equal'}
               - {'name':'QVFYOBJRST', 'expect':'3', 'check': 'equal'}
@@ -102,18 +111,26 @@
         - set_fact:
             level2:
               - {'name':'QALWOBJRST', 'expect':'*NONE', 'check': 'equal'}
+              - {'name':'QATNPGM', 'expect':'*NONE', 'check': 'equal'}
               - {'name':'QALWUSRDMN', 'expect':'QTEMP', 'check': 'equal'}
               - {'name':'QAUDCTL', 'expect':'*OBJAUD *AUDLVL', 'check': 'equal_as_list'}
               - {'name':'QAUDENDACN', 'expect':'*PWRDWNSYS', 'check': 'equal'}
               - {'name':'QAUDFRCLVL', 'expect':'1', 'check': 'equal'}
+              - {'name':'QAUDLVL', 'expect':'*AUTFAIL *CREATE *DELETE *OBJMGT
+                  *PGMFAIL *SAVRST *SECURITY *SERVICE *SYSMGT', 'check': 'equal_as_list'}
+              - {'name':'QAUDLVL2', 'expect':'*NONE', 'check': 'equal'}
+              - {'name':'QAUTOCFG', 'expect':'0', 'check': 'equal'}
               - {'name':'QAUTOVRT', 'expect':'0', 'check': 'equal'}
+              - {'name':'QAUTORMT', 'expect':'0', 'check': 'equal'}
               - {'name':'QCRTAUT', 'expect':'*EXCLUDE', 'check': 'equal'}
               - {'name':'QCRTOBJAUD', 'expect':'*ALL', 'check': 'equal'}
               - {'name':'QDSCJOBITV', 'expect':'15', 'check': 'equal'}
               - {'name':'QFRCCVNRST', 'expect':'7', 'check': 'equal'}
+              - {'name':'QDSPSGNINF', 'expect':'1', 'check': 'equal'}
               - {'name':'QINACTITV', 'expect':'0000000015', 'check': 'equal'}
               - {'name':'QINACTMSGQ', 'expect':'*ENDJOB', 'check': 'equal'}
               - {'name':'QLMTDEVSSN', 'expect':'1', 'check': 'equal'}
+              - {'name':'QLMTSECOFR', 'expect':'0', 'check': 'equal'}
               - {'name':'QMAXSGNACN', 'expect':'3', 'check': 'equal'}
               - {'name':'QMAXSIGN', 'expect':'000003', 'check': 'equal'}
               - {'name':'QPWDCHGBLK', 'expect':'99', 'check': 'equal'}
@@ -123,12 +140,103 @@
                   *DGTLMTLST *DGTMIN1 *LMTPRFNAME *MAXLEN128 *MINLEN14 *REQANY3
                   *SPCCHRLMTAJC *SPCCHRLMTFST *SPCCHRLMTLST', 'check': 'equal_as_list'}
               - {'name':'QPWDVLDPGM', 'expect':'*REGFAC', 'check': 'equal'}
-              - {'name':'QRMTSIGN', 'expect':'*FRCSIGNON', 'check': 'equal'}
               - {'name':'QRETSVRSEC', 'expect':'0', 'check': 'equal'}
+              - {'name':'QRMTIPL', 'expect':'0', 'check': 'equal'}
+              - {'name':'QRMTSIGN', 'expect':'*FRCSIGNON', 'check': 'equal'}
+              - {'name':'QRMTSRVATR', 'expect':'0', 'check': 'equal'}
               - {'name':'QSECURITY', 'expect':'50', 'check': 'equal'}
+              - {'name':'QSCANFS', 'expect':'*ROOTOPNUD', 'check': 'equal'}
+              - {'name':'QSCANFSCTL', 'expect':'*ERRFAIL *NOWRTUPG', 'check': 'equal'}
               - {'name':'QSHRMEMCTL', 'expect':'0', 'check': 'equal'}
+              - {'name':'QSSLCSL', 'expect':'*AES_128_GCM_SHA256 *AES_256_GCM_SHA384 *CHACHA20_POLY1305_SHA256
+                  *ECDHE_ECDSA_AES_128_GCM_SHA256 *ECDHE_ECDSA_AES_256_GCM_SHA384 *ECDHE_RSA_AES_128_GCM_SHA256
+                  *ECDHE_RSA_AES_256_GCM_SHA384', 'check': 'equal_as_list'}
+              - {'name':'QSSLCSLCTL', 'expect':'*OPSYS', 'check': 'equal'}
+              - {'name':'QSSLPCL', 'expect':'*TLSV1.3 *TLSV1.2', 'check': 'equal'}
               - {'name':'QVFYOBJRST', 'expect':'5', 'check': 'equal'}
           when: level_mode == '2'
+
+        - set_fact:
+            level3:
+              - {'name':'QALWOBJRST', 'expect':'*NONE', 'check': 'equal'}
+              - {'name':'QATNPGM', 'expect':'*NONE', 'check': 'equal'}
+              - {'name':'QAUDCTL', 'expect':'*NOQTEMP *OBJAUD *AUDLVL', 'check': 'equal_as_list'}
+              - {'name':'QAUDENDACN', 'expect':'*NOTIFY', 'check': 'equal'}
+              - {'name':'QAUDFRCLVL', 'expect':'*SYS', 'check': 'equal'}
+              - {'name':'QAUDLVL', 'expect':'*AUTFAIL *CREATE *DELETE *OBJMGT
+                  *PGMFAIL *SAVRST *SECURITY *SERVICE *SYSMGT', 'check': 'equal_as_list'}
+              - {'name':'QAUDLVL2', 'expect':'*NONE', 'check': 'equal'}
+              - {'name':'QAUTOCFG', 'expect':'0', 'check': 'equal'}
+              - {'name':'QAUTORMT', 'expect':'0', 'check': 'equal'}
+              - {'name':'QCRTAUT', 'expect':'*USE', 'check': 'equal'}
+              - {'name':'QDSCJOBITV', 'expect':'60', 'check': 'equal'}
+              - {'name':'QDSPSGNINF', 'expect':'1', 'check': 'equal'}
+              - {'name':'QFRCCVNRST', 'expect':'3', 'check': 'equal'}
+              - {'name':'QINACTITV', 'expect':'15', 'check': 'equal'}
+              - {'name':'QINACTMSGQ', 'expect':'*DSCJOB', 'check': 'equal'}
+              - {'name':'QLMTDEVSSN', 'expect':'1', 'check': 'equal'}
+              - {'name':'QLMTSECOFR', 'expect':'1', 'check': 'equal'}
+              - {'name':'QMAXSGNACN', 'expect':'3', 'check': 'equal'}
+              - {'name':'QMAXSIGN', 'expect':'3', 'check': 'equal'}
+              - {'name':'QPWDCHGBLK', 'expect':'24', 'check': 'equal'}
+              - {'name':'QPWDEXPITV', 'expect':'90', 'check': 'equal'}
+              - {'name':'QPWDEXPWRN', 'expect':'14', 'check': 'equal'}
+              - {'name':'QPWDLVL', 'expect':'3', 'check': 'equal'}
+              - {'name':'QPWDRQDDIF', 'expect':'1', 'check': 'equal'}
+              - {'name':'QRETSVRSEC', 'expect':'1', 'check': 'equal'}
+              - {'name':'QRMTIPL', 'expect':'0', 'check': 'equal'}
+              - {'name':'QRMTSIGN', 'expect':'*FRCSIGNON', 'check': 'equal'}
+              - {'name':'QRMTSRVATR', 'expect':'0', 'check': 'equal'}
+              - {'name':'QSCANFS', 'expect':'*ROOTOPNUD', 'check': 'equal'}
+              - {'name':'QSCANFSCTL', 'expect':'*ERRFAIL *NOWRTUPG', 'check': 'equal'}
+              - {'name':'QSECURITY', 'expect':'50', 'check': 'equal'}
+              - {'name':'QSHRMEMCTL', 'expect':'1', 'check': 'equal'}
+              - {'name':'QVFYOBJRST', 'expect':'3', 'check': 'equal'}
+              - {'name':'QPWDRULES', 
+                  'expect_V7R1M0':'*LMTPRFNAME *MINLEN15', 
+                  'expect_V7R2M0':'*ALLCRTCHG *LMTPRFNAME *MINLEN15', 
+                  'expect_V7R3M0':'*ALLCRTCHG *LMTPRFNAME *MINLEN15', 
+                  'expect_V7R4M0':'*ALLCRTCHG *LMTPRFNAME *MINLEN15', 
+                  'expect_V7R5M0':'*ALLCRTCHG *LMTPRFNAME *MINLEN15',
+                  'check': 'equal_as_list'}
+              - {'name':'QSSLCSL', 
+                  'expect_V7R1M0':'*RSA_AES_128_CBC_SHA256 *RSA_AES_128_CBC_SHA *RSA_AES_256_CBC_SHA256 *RSA_AES_256_CBC_SHA', 
+                  'expect_V7R2M0':'*ECDHE_ECDSA_AES_128_GCM_SHA256 *ECDHE_ECDSA_AES_256_GCM_SHA384 *RSA_AES_128_GCM_SHA256 *RSA_AES_256_GCM_SHA384 
+                  *ECDHE_RSA_AES_128_GCM_SHA256 *ECDHE_RSA_AES_256_GCM_SHA384', 
+                  'expect_V7R3M0':'*AES_128_GCM_SHA256 *AES_256_GCM_SHA384 *CHACHA20_POLY1305_SHA256 *ECDHE_ECDSA_AES_128_GCM_SHA256 
+                  *ECDHE_ECDSA_AES_256_GCM_SHA384 *ECDHE_RSA_AES_128_GCM_SHA256 *ECDHE_RSA_AES_256_GCM_SHA384 *ECDHE_RSA_CHACHA20_POLY1305_SHA256 
+                  *ECDHE_ECDSA_CHACHA20_POLY1305_SHA256 *RSA_AES_128_GCM_SHA256 *RSA_AES_256_GCM_SHA384', 
+                  'expect_V7R4M0':'*OPSYS', 
+                  'expect_V7R5M0':'*OPSYS', 
+                  'check': 'equal_as_list'}
+              - {'name':'QSSLCSLCTL', 
+                  'expect_V7R1M0':'*USRDFN', 
+                  'expect_V7R2M0':'*USRDFN', 
+                  'expect_V7R3M0':'*USRDFN', 
+                  'expect_V7R4M0':'*OPSYS', 
+                  'expect_V7R5M0':'*OPSYS',
+                  'check': 'equal'}
+              - {'name':'QSSLPCL', 
+                  'expect_V7R1M0':'*TLSV1.2', 
+                  'expect_V7R2M0':'*TLSV1.2', 
+                  'expect_V7R3M0':'*TLSV1.3 *TLSV1.2', 
+                  'expect_V7R4M0':'*OPSYS', 
+                  'expect_V7R5M0':'*OPSYS',
+                  'check': 'equal'}
+          when: level_mode == '3'
+
+        - name: get ansible host os400 version
+          shell: system "DSPSFWRSC" | grep "5770SS1" | head -n 1 | awk '{print $2}'
+          register: osinfo
+
+        - set_fact:
+            os400_ver: "{{osinfo.stdout}}"
+            ptfs: []
+            ptf_groups: []
+          failed_when: osinfo.rc != 0
+
+        - debug:
+            msg: "{{os400_ver}}" 
 
         - name: check if system values compliant with expected
           include: system_value_check.yml
@@ -143,6 +251,120 @@
           loop_control:
             loop_var: sysval
           when: level_mode == '2'
+
+        - name: check if system values compliant with expected
+          include: system_value_check.yml
+          loop: '{{ level3 }}'
+          loop_control:
+            loop_var: sysval
+          when: level_mode == '3'
+
+        - block:
+            - name: checking particular system values - QAUTOVRT
+              ibmi_sysval:
+                sysvalue:
+                  - {'name':'QAUTOVRT'}
+              register: autovrt
+              ignore_errors: true
+            - set_fact:
+                autovrt_result: "{{ autovrt_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QAUTOVRT"}
+                - {'key': 'actual', 'value': "{{ autovrt.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': true}
+              when: autovrt.rc == 0 and autovrt.sysval[0]['value'] != "0"
+            - set_fact:
+                autovrt_result: "{{ autovrt_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QAUTOVRT"}
+                - {'key': 'actual', 'value': "{{ autovrt.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': false}
+              when: autovrt.rc == 0 and autovrt.sysval[0]['value'] == "0"
+            - set_fact:
+                report: "{{ report|default([]) + [autovrt_result] }}"
+
+            - name: checking particular system values - QLMTDEVSSN
+              ibmi_sysval:
+                sysvalue:
+                  - {'name':'QLMTDEVSSN'}
+              register: QLMTDEVSSN
+              ignore_errors: true
+            - set_fact:
+                QLMTDEVSSN_result: "{{ QLMTDEVSSN_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QLMTDEVSSN"}
+                - {'key': 'actual', 'value': "{{ QLMTDEVSSN.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': true}
+              when: QLMTDEVSSN.rc == 0 and QLMTDEVSSN.sysval[0]['value'] != "0"
+            - set_fact:
+                QLMTDEVSSN_result: "{{ QLMTDEVSSN_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QLMTDEVSSN"}
+                - {'key': 'actual', 'value': "{{ QLMTDEVSSN.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': false}
+              when: QLMTDEVSSN.rc == 0 and QLMTDEVSSN.sysval[0]['value'] == "0"
+            - set_fact:
+                report: "{{ report|default([]) + [QLMTDEVSSN_result] }}"
+          when: level_mode == '1'
+
+        - block:
+            - name: checking particular system values - QUSEADPAUT
+              ibmi_sysval:
+                sysvalue:
+                  - {'name':'QUSEADPAUT'}
+              register: QUSEADPAUT
+              ignore_errors: true
+            - set_fact:
+                QUSEADPAUT_result: "{{ QUSEADPAUT_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QUSEADPAUT"}
+                - {'key': 'actual', 'value': "{{ QUSEADPAUT.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': true}
+              when: QUSEADPAUT.rc == 0 and QUSEADPAUT.sysval[0]['value'] != "*NONE"
+            - set_fact:
+                QUSEADPAUT_result: "{{ QUSEADPAUT_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QUSEADPAUT"}
+                - {'key': 'actual', 'value': "{{ QUSEADPAUT.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': false}
+              when: QUSEADPAUT.rc == 0 and QUSEADPAUT.sysval[0]['value'] == "*NONE"
+            - set_fact:
+                report: "{{ report|default([]) + [QUSEADPAUT_result] }}"
+
+        - block:
+            - name: checking particular system values - QSYSLIBL
+              ibmi_sysval:
+                sysvalue:
+                  - {'name':'QSYSLIBL'}
+              register: QSYSLIBL
+              ignore_errors: true
+
+            - name: check each library in QSYSLIBL to see if *PUBLIC authority is set to *USE
+              ibmi_sql_query:
+                sql: "SELECT * FROM QSYS2.OBJECT_PRIVILEGES WHERE SYSTEM_OBJECT_NAME = '{{item}}' AND
+                    SYSTEM_OBJECT_SCHEMA = 'QSYS' AND OBJECT_TYPE = '*LIB' AND AUTHORIZATION_NAME = '*PUBLIC'
+                    AND OBJECT_AUTHORITY = '*USE'"
+              register: sql
+              with_items:
+                - "{{ QSYSLIBL.sysval[0]['value'].split(' ') }}"
+              when: item != ""
+              failed_when: sql.row_count == 0
+            - set_fact:
+                QSYSLIBL_result: "{{ QSYSLIBL_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QSYSLIBL"}
+                - {'key': 'actual', 'value': "{{ QSYSLIBL.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': true}
+          rescue:
+            - set_fact:
+                QSYSLIBL_result: "{{ QSYSLIBL_result | default({}) | combine ({ item.key : item.value }) }}"
+              with_items:
+                - {'key': 'name', 'value': "QSYSLIBL"}
+                - {'key': 'actual', 'value': "{{ QSYSLIBL.sysval[0]['value'] }}"}
+                - {'key': 'compliant', 'value': false}
+
+        - set_fact:
+            report: "{{ report|default([]) + [QSYSLIBL_result] }}"
 
         - name: Generate report to file
           copy:

@@ -2,8 +2,10 @@
 # Apache License, Version 2.0 (see https://opensource.org/licenses/Apache-2.0)
 
 # Description:
-  # This playbook will get the PTF group information in catalog. Then call sync_apply_ptf_group role to transfer the PTF group files
-  # to the target system, and apply.
+  # This playbook is used for 2nd level solution. It will get the PTF group information in catalog.
+  # Then call sync_apply_ptf_group_networkinstall role to install PTF group on the target system.
+  # sync_apply_ptf_group_networkinstall role will setup network install env on repo server and use network install mechanism 
+  # to install the PTF group on the target system.
 
 # Parameters:
   # repo_server -- The IBM i server which can use SNDPTFORD to download and store PTF and PTF group install files.
@@ -13,10 +15,10 @@
   # ptf_omit_list -- The list of PTFs which will be omitted. The elements of the list are dict. The key of the dict should be the product ID of the fix that is omitted.
 
 # Command example: 
-  # ansible-playbook ./sync_apply_ptf_group.yml -e "{'target_system': 'systemA', 'repo_server': 'reposerver', 'ptf_group':
-  # {'ptf_group_number':'SF99740', 'ptf_group_level':'20121'}, 'delete': true, 'ptf_omit_list': [{'5770SS1': 'SI78582'}, {'5770ss1': 'SI78544'}]}"
+  # ansible-playbook ./sync_apply_ptf_group_networkinstall.yml -e "{'target_system': 'systemA', 'repo_server': 'reposerver', 'ptf_group':
+  # {'ptf_group_number':'SF99740', 'ptf_group_level':'20121'}, 'ptf_omit_list': [{'5770SS1': 'SI78582'}, {'5770ss1': 'SI78544'}]}"
 ---
-- name: Transfer a PTF group files from repo server to target system, and apply
+- name: Using remote network install mechanism to install the PTF group on target system
   hosts: '{{ target_system }}'
   gather_facts: false
   collections:
@@ -34,9 +36,8 @@
         action: "find"
         parameters:
           - "{{ {'ptf_group_number': ptf_group.ptf_group_number, \
-            'ptf_group_level': ptf_group.ptf_group_level | default(omit), \
-            'release_date': ptf_group.release_date | default(omit), \
-            'additional_param':'ORDER BY release_date LIMIT 1'} }}"
+             'ptf_group_level': ptf_group.ptf_group_level | default(omit), \
+             'release_date': ptf_group.release_date | default(omit), 'additional_param':'ORDER BY release_date LIMIT 1'} }}"
       delegate_to: "{{ repo_server }}"
       register: fix_repo_find_result
 
@@ -58,9 +59,9 @@
         action: "find"
         parameters:
           - "{{ {'ptf_group_number': ptf_group.ptf_group_number, \
-            'ptf_group_level': ptf_group.ptf_group_level | default(omit),\
-            'release_date': ptf_group.release_date | default(omit), \
-            'additional_param':'ORDER BY release_date LIMIT 1'} }}"
+             'ptf_group_level': ptf_group.ptf_group_level | default(omit), \
+             'release_date': ptf_group.release_date | default(omit), \
+             'additional_param':'ORDER BY release_date LIMIT 1'} }}"
       delegate_to: "{{ repo_server }}"
       register: download_status_find_result
 
@@ -80,9 +81,9 @@
       set_fact:
         ptf_group_information: "{{ fix_repo_find_result.success_list[0] }}"
 
-    - name: Include sync_apply_ptf_group role to transfer PTF group files to target ibm i, and apply
+    - name: Include sync_apply_ptf_group_networkinstall role to install PTF group on target ibm i
       include_role:
-        name: sync_apply_ptf_group
+        name: sync_apply_ptf_group_networkinstall
       vars:
         ptf_group_info: "{{ ptf_group_information }}"
         src_host: "{{ repo_server }}"
